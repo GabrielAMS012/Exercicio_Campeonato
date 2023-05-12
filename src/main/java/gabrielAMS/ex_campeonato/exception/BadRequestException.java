@@ -1,4 +1,4 @@
-package gabrielAMS.ex_campeonato.jogos.exception;
+package gabrielAMS.ex_campeonato.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

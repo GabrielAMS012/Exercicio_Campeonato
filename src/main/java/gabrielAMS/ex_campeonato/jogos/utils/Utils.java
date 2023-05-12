@@ -1,7 +1,7 @@
 package gabrielAMS.ex_campeonato.jogos.utils;
 
 import gabrielAMS.ex_campeonato.jogos.dto.DtoJogos;
-import gabrielAMS.ex_campeonato.jogos.exception.BadRequestException;
+import gabrielAMS.ex_campeonato.exception.BadRequestException;
 import gabrielAMS.ex_campeonato.jogos.repository.JogosRepository;
 import org.springframework.stereotype.Component;
 

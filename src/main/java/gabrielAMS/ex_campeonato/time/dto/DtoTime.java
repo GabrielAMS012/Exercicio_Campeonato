@@ -15,13 +15,13 @@ import javax.persistence.*;
 @Builder
 @Table(name = "times_tb")
 public class DtoTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_time")
-    private long id;
-    @ManyToOne
-    @JoinColumn(name = "cod_time")
-    private DtoTabela tabela;
+    private int id_time;
 
+    @Column(name = "nome_time")
+    private String nome_time;
 
 }

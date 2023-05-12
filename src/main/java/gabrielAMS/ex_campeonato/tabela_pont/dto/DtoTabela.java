@@ -20,15 +20,15 @@ public class DtoTabela {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_tabela")
-    private long id_tabela;
+    private int id_tabela;
 
-    @OneToMany
-    @JoinColumn(name = "cod_camp")
-    private List<DtoCampeonato> campeonatos;
+    @ManyToOne
+    @JoinColumn(name = "id_camp")
+    private DtoCampeonato campeonato;
 
-    @OneToMany
-    @JoinColumn(name = "cod_time")
-    private List<DtoTime> times;
+    @ManyToOne
+    @JoinColumn(name = "id_time")
+    private DtoTime times;
 
     @Column(name = "qntd_pontos")
     private int pontuacao;

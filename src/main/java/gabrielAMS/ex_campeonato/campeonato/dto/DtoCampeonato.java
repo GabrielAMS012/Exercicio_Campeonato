@@ -20,20 +20,18 @@ public class DtoCampeonato {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_campeonato")
-    private int id;
-    @ManyToOne
-    @JoinColumn(name = "cod_camp")
-    private DtoTabela tabela;
+    private int id_campeonato;
+
     @NotBlank
     @Column(name = "nome_campeonato")
     private String nome_camp;
+
     @NotBlank
     @Column(name = "ano_campeonato")
     private int ano;
+
     @NotBlank
     @Column(name = "Status")
     private boolean iniciado;
-    @OneToOne
-    @JoinColumn(name ="cod_jogo")
-    private DtoJogos jogos;
+
 }

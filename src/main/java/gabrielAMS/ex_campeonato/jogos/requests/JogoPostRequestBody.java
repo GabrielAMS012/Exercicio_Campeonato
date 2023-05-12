@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JogoPostRequestBody {
-    private int id;
     private int time_mandante;
     private int time_visitante;
     private int gols_mandante;

@@ -1,6 +1,7 @@
 package gabrielAMS.ex_campeonato.jogos.controller;
 
 import gabrielAMS.ex_campeonato.jogos.dto.DtoJogos;
+import gabrielAMS.ex_campeonato.jogos.requests.JogoPostRequestBody;
 import gabrielAMS.ex_campeonato.jogos.requests.JogoPutRequestBody;
 import gabrielAMS.ex_campeonato.jogos.service.JogosService;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +32,12 @@ public class JogosController {
 
     @GetMapping(path = "/jogos/{id}")
     public ResponseEntity<DtoJogos> findById(@PathVariable int id){
-        return ResponseEntity.ok(jogosService.findByIdOrThrowBadRequest(id));
+        return ResponseEntity.ok(jogosService.findJogoByIdOrThrowBadRequest(id));
     }
 
     @PostMapping
-    public ResponseEntity<DtoJogos> save(@RequestBody @Valid DtoJogos dtoJogos){
-        return new ResponseEntity<>(jogosService.save(dtoJogos), HttpStatus.CREATED);
+    public ResponseEntity<DtoJogos> save(@RequestBody @Valid JogoPostRequestBody jogoPostRequestBody){
+        return new ResponseEntity<>(jogosService.save(jogoPostRequestBody), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/jogos/{id}")

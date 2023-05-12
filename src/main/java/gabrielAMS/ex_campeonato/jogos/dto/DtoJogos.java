@@ -1,6 +1,7 @@
 package gabrielAMS.ex_campeonato.jogos.dto;
 
 import gabrielAMS.ex_campeonato.campeonato.dto.DtoCampeonato;
+import gabrielAMS.ex_campeonato.time.dto.DtoTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,14 +20,19 @@ public class DtoJogos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_jogo")
     private int id;
-    @OneToOne
-    @JoinColumn(name ="cod_jogo")
+
+    @ManyToOne
+    @JoinColumn(name ="id_campeonato")
     private DtoCampeonato campeonato;
 
-    @Column(name = "time_mandante")
-    private int time_mandante;
-    @Column(name = "time_visitante")
-    private int time_visitante;
+    @ManyToOne
+    @JoinColumn(name = "id_time_mandante")
+    private DtoTime time_mandante;
+
+    @ManyToOne
+    @JoinColumn(name = "id_time_visitante")
+    private DtoTime time_visitante;
+
     @Column(name = "gols_mandante")
     private int gols_mandante;
     @Column(name = "gols_visitante")

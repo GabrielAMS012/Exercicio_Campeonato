@@ -1,7 +1,7 @@
 package gabrielAMS.ex_campeonato.jogos.service;
 
 import gabrielAMS.ex_campeonato.jogos.dto.DtoJogos;
-import gabrielAMS.ex_campeonato.jogos.exception.BadRequestException;
+import gabrielAMS.ex_campeonato.exception.BadRequestException;
 import gabrielAMS.ex_campeonato.jogos.mapper.JogoMapper;
 import gabrielAMS.ex_campeonato.jogos.repository.JogosRepository;
 import gabrielAMS.ex_campeonato.jogos.requests.JogoPostRequestBody;
@@ -27,12 +27,12 @@ public class JogosService {
         return utils.findJogoOrThrowNotFound(id, jogosRepository);
     }
 
-    public DtoJogos findByIdOrThrowBadRequest(int id){
+    public DtoJogos findJogoByIdOrThrowBadRequest(int id){
         return jogosRepository.findById(id).orElseThrow(()-> new BadRequestException("Jogo não encontrado"));
     }
 
-    public DtoJogos save(DtoJogos jogo){
-        return jogosRepository.save(jogo);
+    public DtoJogos save(JogoPostRequestBody jogoPostRequestBody){
+        return jogosRepository.save(JogoMapper.INSTANCE.toJogo(jogoPostRequestBody));
     }
 
     public void delete(int id){
@@ -40,7 +40,7 @@ public class JogosService {
     }
 
     public void replace(JogoPutRequestBody jogoPutRequestBody){
-        DtoJogos jogoSalvo = findByIdOrThrowBadRequest(jogoPutRequestBody.getId());
+        DtoJogos jogoSalvo = findJogoByIdOrThrowBadRequest(jogoPutRequestBody.getId());
         DtoJogos jogo = JogoMapper.INSTANCE.toJogo(jogoPutRequestBody);
         jogo.setId(jogoSalvo.getId());
         jogosRepository.save(jogo);
