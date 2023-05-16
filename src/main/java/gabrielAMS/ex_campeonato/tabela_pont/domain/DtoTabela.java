@@ -1,14 +1,13 @@
-package gabrielAMS.ex_campeonato.tabela_pont.dto;
+package gabrielAMS.ex_campeonato.tabela_pont.domain;
 
-import gabrielAMS.ex_campeonato.campeonato.dto.DtoCampeonato;
-import gabrielAMS.ex_campeonato.time.dto.DtoTime;
+import gabrielAMS.ex_campeonato.campeonato.domain.DomainCampeonato;
+import gabrielAMS.ex_campeonato.time.domain.DomainTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,15 +19,15 @@ public class DtoTabela {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_tabela")
-    private int id_tabela;
+    private long id_tabela;
 
     @ManyToOne
     @JoinColumn(name = "id_camp")
-    private DtoCampeonato campeonato;
+    private DomainCampeonato campeonato;
 
     @ManyToOne
     @JoinColumn(name = "id_time")
-    private DtoTime times;
+    private DomainTime times;
 
     @Column(name = "qntd_pontos")
     private int pontuacao;

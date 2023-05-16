@@ -1,12 +1,16 @@
-package gabrielAMS.ex_campeonato.tabela_pont.requests;
+package gabrielAMS.ex_campeonato.tabela_pont.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class TabelaPontPutRequestBody {
-    private long id_tabela;
+@AllArgsConstructor
+@NoArgsConstructor
+public class TabelaPontPostRequestBody {
+
     private int pontuacao;
     private int qntd_vitorias;
     private int qntd_derrotas;

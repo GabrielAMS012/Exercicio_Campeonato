@@ -1,17 +1,19 @@
 package gabrielAMS.ex_campeonato.jogos.controller;
 
+import gabrielAMS.ex_campeonato.jogos.domain.DomainJogos;
 import gabrielAMS.ex_campeonato.jogos.dto.DtoJogos;
-import gabrielAMS.ex_campeonato.jogos.requests.JogoPostRequestBody;
-import gabrielAMS.ex_campeonato.jogos.requests.JogoPutRequestBody;
 import gabrielAMS.ex_campeonato.jogos.service.JogosService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("jogo")
@@ -20,35 +22,32 @@ import java.util.List;
 public class JogosController {
     private final JogosService jogosService;
 
-    @GetMapping
-    public ResponseEntity<List<DtoJogos>> list(){
-        return ResponseEntity.ok(jogosService.listAll());
+    @GetMapping(path = "/all")
+    public ResponseEntity<Page<DomainJogos>> listAll(@PageableDefault(page = 0, size = 10, sort = "id_campeonato",
+            direction = Sort.Direction.ASC) Pageable pageable){
+        return ResponseEntity.ok(jogosService.findAll(pageable));
     }
 
-    @GetMapping(path = "/jogos/all")
-    public ResponseEntity<List<DtoJogos>> listAll(){
-        return ResponseEntity.ok(jogosService.listAll());
-    }
-
-    @GetMapping(path = "/jogos/{id}")
-    public ResponseEntity<DtoJogos> findById(@PathVariable int id){
-        return ResponseEntity.ok(jogosService.findJogoByIdOrThrowBadRequest(id));
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Object> findById(@PathVariable("id") Long id){
+        return ResponseEntity.ok(jogosService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<DtoJogos> save(@RequestBody @Valid JogoPostRequestBody jogoPostRequestBody){
-        return new ResponseEntity<>(jogosService.save(jogoPostRequestBody), HttpStatus.CREATED);
+    public ResponseEntity<DomainJogos> save(@RequestBody @Valid DtoJogos dtoJogos){
+        return ResponseEntity.ok(jogosService.saveJogo(dtoJogos));
     }
 
-    @DeleteMapping(path = "/jogos/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id){
-        jogosService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Object> delete(@PathVariable ("id") long id){
+        jogosService.deleteJogo(id);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PutMapping
-    public ResponseEntity<Void> replace(@RequestBody JogoPutRequestBody jogoPutRequestBody){
-        jogosService.replace(jogoPutRequestBody);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Object> replace(@PathVariable("id") long id,
+                                          @RequestBody DtoJogos dtoJogos){
+        jogosService.replaceJogo(id,dtoJogos);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

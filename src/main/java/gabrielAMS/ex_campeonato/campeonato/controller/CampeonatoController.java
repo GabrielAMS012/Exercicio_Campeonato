@@ -1,8 +1,7 @@
 package gabrielAMS.ex_campeonato.campeonato.controller;
 
+import gabrielAMS.ex_campeonato.campeonato.domain.DomainCampeonato;
 import gabrielAMS.ex_campeonato.campeonato.dto.DtoCampeonato;
-import gabrielAMS.ex_campeonato.campeonato.requests.CampeonatoPostRequestBody;
-import gabrielAMS.ex_campeonato.campeonato.requests.CampeonatoPutRequestBody;
 import gabrielAMS.ex_campeonato.campeonato.service.CampeonatoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,31 +19,42 @@ import java.util.List;
 public class CampeonatoController {
     private final CampeonatoService campeonatoService;
 
-    @GetMapping(path = "/campeonato/all")
-    public ResponseEntity<List<DtoCampeonato>> listAll(){
+    @GetMapping(path = "/all")
+    public ResponseEntity<List<DomainCampeonato>> listAll(){
         return ResponseEntity.ok(campeonatoService.listAll());
     }
 
-    @GetMapping(path = "campeonato/{id}")
-    public ResponseEntity<DtoCampeonato> findById(@PathVariable int id){
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<DomainCampeonato> findById(@PathVariable long id){
         return ResponseEntity.ok(campeonatoService.findCampByIdOrThrowBadRequest(id));
     }
 
     @PostMapping
-    public ResponseEntity<DtoCampeonato> save(@RequestBody @Valid CampeonatoPostRequestBody campeonatoPostRequestBody){
-        return new ResponseEntity<>(campeonatoService.save(campeonatoPostRequestBody), HttpStatus.CREATED);
+    public ResponseEntity<DomainCampeonato> save(@RequestBody @Valid DomainCampeonato domainCampeonato){
+        return new ResponseEntity<>(campeonatoService.save(domainCampeonato), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(path = "/campeonato/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id){
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id){
         campeonatoService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping
-    public ResponseEntity<Void> replace(@RequestBody CampeonatoPutRequestBody campeonatoPutRequestBody){
-        campeonatoService.replace(campeonatoPutRequestBody);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> replace(@PathVariable("id") long id, @RequestBody @Valid DomainCampeonato domainCampeonato){
+        campeonatoService.replace(id, domainCampeonato);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @PutMapping("/{id}/iniciar")
+    public ResponseEntity<Object> iniciarCampeonato(@PathVariable("id") long id, @RequestBody @Valid DtoCampeonato dtoCampeonato){
+        this.campeonatoService.iniciateCampeonato(dtoCampeonato);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/finalizar")
+    public ResponseEntity<Object> finalizarCampeonato(@PathVariable("id") long id){
+        this.campeonatoService.finishCampeonato(id);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
 }

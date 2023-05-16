@@ -1,14 +1,14 @@
 package gabrielAMS.ex_campeonato.time.service;
 
 import gabrielAMS.ex_campeonato.exception.BadRequestException;
-import gabrielAMS.ex_campeonato.time.dto.DtoTime;
-import gabrielAMS.ex_campeonato.time.mapper.TimeMapper;
+import gabrielAMS.ex_campeonato.time.domain.DomainTime;
 import gabrielAMS.ex_campeonato.time.repository.TimeRepository;
-import gabrielAMS.ex_campeonato.time.requests.TimePostRequestBody;
-import gabrielAMS.ex_campeonato.time.requests.TimePutRequestBody;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -16,28 +16,32 @@ import java.util.List;
 public class TimeService {
     private final TimeRepository timeRepository;
 
-    public List<DtoTime> listAll(){
+    public List<DomainTime> listAll(){
         return timeRepository.findAll();
     }
 
-    public DtoTime findTimeByIdOrThrowBadRequest(int id){
+    public DomainTime findTimeByIdOrThrowBadRequest(long id){
         return timeRepository.findById(id).orElseThrow(()-> new BadRequestException("Time não encontrado"));
     }
 
-
-    public DtoTime save(TimePostRequestBody timePostRequestBody){
-        return timeRepository.save(TimeMapper.INSTANCE.toTime(timePostRequestBody));
+    @Transactional
+    public DomainTime saveTime(DomainTime domainTime){
+        return timeRepository.save(domainTime);
     }
 
-    public void delete(int id){
+    public void delete(long id){
         timeRepository.delete(findTimeByIdOrThrowBadRequest(id));
     }
 
-    public void replace(TimePutRequestBody timePutRequestBody){
-        DtoTime timeSalvo = findTimeByIdOrThrowBadRequest(timePutRequestBody.getId_time());
-        DtoTime time = TimeMapper.INSTANCE.toTime(timePutRequestBody);
-        time.setId_time(timeSalvo.getId_time());
-        timeRepository.save(time);
+    public DomainTime replace(DomainTime domainTime){
+        validateTimeExists(domainTime);
+        return timeRepository.save(domainTime);
+    }
+
+    public void validateTimeExists(DomainTime domainTime){
+        if(timeRepository.existsByNomeTime(domainTime.getNomeTime())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time já cadastrado");
+        }
     }
 
 }
