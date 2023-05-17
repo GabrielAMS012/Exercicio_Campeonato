@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -16,12 +16,14 @@ import java.util.List;
 public class TimeService {
     private final TimeRepository timeRepository;
 
+    @Transactional(readOnly = true)
     public List<DomainTime> listAll(){
         return timeRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public DomainTime findTimeByIdOrThrowBadRequest(long id){
-        return timeRepository.findById(id).orElseThrow(()-> new BadRequestException("Time não encontrado"));
+        return timeRepository.findById(id).orElseThrow(()-> new BadRequestException("Time " + id + " não encontrado"));
     }
 
     @Transactional
@@ -29,10 +31,12 @@ public class TimeService {
         return timeRepository.save(domainTime);
     }
 
+    @Transactional
     public void delete(long id){
         timeRepository.delete(findTimeByIdOrThrowBadRequest(id));
     }
 
+    @Transactional
     public DomainTime replace(DomainTime domainTime){
         validateTimeExists(domainTime);
         return timeRepository.save(domainTime);

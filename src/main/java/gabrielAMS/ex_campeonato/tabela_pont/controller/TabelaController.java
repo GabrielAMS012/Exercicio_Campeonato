@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("tbPont")
 @Log4j2
 public class TabelaController {
-//    private final TabelaService tabelaService;
-//
-//    public TabelaController(TabelaController tabelaController){
-//        this.tabelaService = tabelaService;
-//    }
+    final TabelaService tabelaService;
+
+    public TabelaController(TabelaService tabelaService){
+        this.tabelaService = tabelaService;
+    }
 }

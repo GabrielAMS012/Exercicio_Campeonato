@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Builder
 @Table(name = "tabela_pont_tb")
-public class DtoTabela {
+public class DomainTabelaPont {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_tabela")
@@ -35,6 +35,8 @@ public class DtoTabela {
     private int qntd_vitorias;
     @Column(name = "derrotas")
     private int qntd_derrotas;
+    @Column(name = "empates")
+    private int qntd_empates;
     @Column(name = "gols_marcados")
     private int gols_marcados;
     @Column(name = "gols_sofridos")

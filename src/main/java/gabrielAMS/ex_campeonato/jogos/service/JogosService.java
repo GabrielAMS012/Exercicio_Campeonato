@@ -7,7 +7,7 @@ import gabrielAMS.ex_campeonato.exception.BadRequestException;
 import gabrielAMS.ex_campeonato.jogos.domain.DomainJogos;
 import gabrielAMS.ex_campeonato.jogos.repository.JogosRepository;
 import gabrielAMS.ex_campeonato.jogos.dto.DtoJogos;
-import gabrielAMS.ex_campeonato.jogos.utils.Utils;
+
 import gabrielAMS.ex_campeonato.time.repository.TimeRepository;
 import gabrielAMS.ex_campeonato.time.service.TimeService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Objects;
 
@@ -25,7 +25,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class JogosService {
 
-    private final Utils utils;
     final TimeService timeService;
     final JogosRepository jogosRepository;
     final CampeonatoService campeonatoService;
@@ -36,11 +35,8 @@ public class JogosService {
     public DomainJogos saveJogo(DtoJogos dtoJogos){
         this.validateNovoJogo(dtoJogos);
         DomainJogos novoJogo = new DomainJogos();
-
-        if(Objects.nonNull(dtoJogos.getId_campeonato())){
-            DomainCampeonato domainCampeonato = this.campeonatoService.findCampByIdOrThrowBadRequest(dtoJogos.getId_campeonato());
-            novoJogo.setId_campeonato(domainCampeonato);
-        }
+        DomainCampeonato domainCampeonato = this.campeonatoService.findCampByIdOrThrowBadRequest(dtoJogos.getId_campeonato());
+        novoJogo.setId_campeonato(domainCampeonato);
 
         novoJogo.setTime_mandante(this.timeService.findTimeByIdOrThrowBadRequest(dtoJogos.getTime_mandante()));
         novoJogo.setTime_mandante(this.timeService.findTimeByIdOrThrowBadRequest(dtoJogos.getTime_visitante()));
@@ -50,12 +46,12 @@ public class JogosService {
         return this.jogosRepository.save(novoJogo);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public DomainJogos findById(Long id){
         return this.jogosRepository.findById(id).orElseThrow(() -> new BadRequestException("Jogo não encontrado"));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<DomainJogos> findAll(Pageable pageable){
         return this.jogosRepository.findAll(pageable);
     }
@@ -74,11 +70,10 @@ public class JogosService {
         this.jogosRepository.deleteById(id);
     }
     private void validateNovoJogo(DtoJogos dtoJogos){
-        if(Objects.nonNull(dtoJogos.getId_campeonato())){
-            validateStatusCampeonato(dtoJogos);
-            validateTimeDisponivel(dtoJogos);
-            jogoExiste(dtoJogos);
-        }
+        validateStatusCampeonato(dtoJogos);
+        validateTimeDisponivel(dtoJogos);
+        jogoExiste(dtoJogos);
+
         validateData(dtoJogos);
         validateOponente(dtoJogos);
         validateTimeDisponivel(dtoJogos);
@@ -117,7 +112,4 @@ public class JogosService {
         if(Objects.equals(dtoJogos.getTime_mandante(), dtoJogos.getTime_visitante())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Adversários precisam ser diferentes");        }
     }
-
-
-
 }

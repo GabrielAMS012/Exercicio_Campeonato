@@ -18,11 +18,6 @@ public interface JogosRepository extends JpaRepository<DomainJogos, Long> {
     boolean jogoExiste(@Param("id_campeonato") long id_campeonato,
                           @Param("id_time_mandante") long id_time_mandante,
                           @Param("id_time_visitante") long id_time_visitante);
-    @Query(nativeQuery = true,
-            value = "SELECT count(*) > 0 "+
-                        "FROM jogos_tb j" +
-                    "       WHERE j.id_campeonato = :id_campeonato")
-    long countDomainJogosById_campeonato(@Param("id_campeonato") long id_campeonato);
 
     @Query(nativeQuery = true,
             value = "SELECT count(*) > 0" +
@@ -35,4 +30,5 @@ public interface JogosRepository extends JpaRepository<DomainJogos, Long> {
     boolean findDomainJogosByDataJogo(@Param("dataJogo")Date dataJogo,
                                        @Param("id_time_mandante") long id_time_mandante,
                                        @Param("id_time_visitante") long id_time_visitante);
+
 }
