@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TimeRepository extends JpaRepository<DomainTime, Long> {
     boolean existsByNomeTime(String nome_time);
+
 }

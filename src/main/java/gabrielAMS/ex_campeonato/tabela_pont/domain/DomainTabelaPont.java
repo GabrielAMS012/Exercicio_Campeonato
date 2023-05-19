@@ -26,7 +26,7 @@ public class DomainTabelaPont {
     private DomainCampeonato campeonato;
 
     @ManyToOne
-    @JoinColumn(name = "id_time")
+    @JoinColumn(name = "time_id")
     private DomainTime times;
 
     @Column(name = "qntd_pontos")

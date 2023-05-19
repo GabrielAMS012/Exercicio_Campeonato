@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Builder
 public class DtoJogos {
-    private int id_campeonato;
+    private long id_campeonato;
     @NotNull
     private long time_mandante;
     @NotNull
@@ -26,4 +26,6 @@ public class DtoJogos {
     private int gols_visitante;
     @NotNull
     private Date dataJogo;
+    private boolean jogoIniciado = false;
+    private boolean jogoFinalizado = false;
 }

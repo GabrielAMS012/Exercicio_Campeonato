@@ -20,11 +20,11 @@ public class DomainJogos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_jogo")
-    private int id_jogo;
+    private long id_jogo;
 
     @ManyToOne
     @JoinColumn(name ="id_campeonato")
-    private DomainCampeonato id_campeonato;
+    private DomainCampeonato idCampeonato;
 
     @ManyToOne
     @JoinColumn(name = "id_time_mandante")
@@ -41,5 +41,4 @@ public class DomainJogos {
 
     @Column(name = "data_jogo")
     private Date dataJogo;
-
 }

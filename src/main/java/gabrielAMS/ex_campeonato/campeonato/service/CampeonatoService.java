@@ -114,8 +114,6 @@ public class CampeonatoService {
         }
     }
 
-
-
     public void validateInicioCampeonato(DtoCampeonato dtoCampeonato){
         validateCampeonatoIniciadoOuFinalizado(dtoCampeonato);
         validateTimesRepetidos(dtoCampeonato);
