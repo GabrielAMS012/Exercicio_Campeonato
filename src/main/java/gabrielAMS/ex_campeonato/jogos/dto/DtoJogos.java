@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Builder
 public class DtoJogos {
-    private long id_campeonato;
+    private Long id_campeonato;
     @NotNull
     private long time_mandante;
     @NotNull

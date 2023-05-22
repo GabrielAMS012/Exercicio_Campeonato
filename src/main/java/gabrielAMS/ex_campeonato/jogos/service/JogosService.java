@@ -48,8 +48,9 @@ public class JogosService {
         novoJogo.setGols_mandante(dtoJogos.getGols_mandante());
         novoJogo.setGols_visitante(dtoJogos.getGols_visitante());
         novoJogo.setDataJogo(dtoJogos.getDataJogo());
-        validateTimeNoCamp(dtoJogos);
-        validaVencedor(dtoJogos);
+        if(Objects.nonNull(dtoJogos.getId_campeonato())) {
+            validaVencedor(dtoJogos);
+        }
         return this.jogosRepository.save(novoJogo);
     }
 
@@ -76,10 +77,16 @@ public class JogosService {
     public void deleteJogo(Long id){
         this.jogosRepository.deleteById(id);
     }
-    private void validateNovoJogo(DtoJogos dtoJogos){
-        validateStatusCampeonato(dtoJogos);
-        jogoExiste(dtoJogos);
 
+    private void validateCampeonato(DtoJogos dtoJogos){
+        validateStatusCampeonato(dtoJogos);
+        validateTimeNoCamp(dtoJogos);
+    }
+    private void validateNovoJogo(DtoJogos dtoJogos){
+        if(Objects.nonNull(dtoJogos.getId_campeonato())) {
+            validateCampeonato(dtoJogos);
+        }
+        jogoExiste(dtoJogos);
         validateData(dtoJogos);
         validateOponente(dtoJogos);
         validateTimeDisponivel(dtoJogos);

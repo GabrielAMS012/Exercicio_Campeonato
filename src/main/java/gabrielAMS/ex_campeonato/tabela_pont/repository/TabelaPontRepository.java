@@ -23,10 +23,15 @@ public interface TabelaPontRepository extends JpaRepository<DomainTabelaPont, Lo
     long getIdTabelaByIdTime(@Param("time_id") long time_id);
 
     @Query(nativeQuery = true,
-            value = "SELECT count(*) " +
+            value = "SELECT count(*) > 0 " +
                         "FROM tabela_pont_tb tpt " +
                             "WHERE tpt.id_camp = :id_camp " +
                                 "AND tpt.id_tabela = :id_tabela ")
     boolean getIdCampByIdTabela(@Param("id_camp") long id_camp, @Param("id_tabela" ) long id_tabela);
+    @Query(nativeQuery = true,
+            value = "SELECT count(*) " +
+                        "FROM tabela_pont_tb tpt " +
+                            "WHERE id_camp = :id_camp")
+    long numeroTimes(@Param("id_camp") long id_camp);
 
 }

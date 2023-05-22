@@ -21,5 +21,11 @@ public interface CampeonatoRepository extends JpaRepository<DomainCampeonato, Lo
                     "from campeonatos_tb ct " +
                     "WHERE ct.id_campeonato = :id_campeonato " +
                     "   AND ct.finalizado = true")
-    boolean campeonatoFinalizado(long id_campeonato);
+    boolean campeonatoFinalizado(@Param("id_campeonato") long id_campeonato);
+
+    @Query(nativeQuery = true,
+            value = "SELECT COUNT(*) " +
+                    "FROM jogos_tb " +
+                    "WHERE id_campeonato = :id_campeonato")
+    long numeroJogos(@Param("id_campeonato") long id_campeonato);
 }

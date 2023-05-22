@@ -68,7 +68,7 @@ public class CampeonatoService {
     }
     @Transactional
     public void finishCampeonato(long id){
-        validateCampeonatoFinalizadoOuNaoIniciado(id);
+        validateFinishCampeonato(id);
         DomainCampeonato domainCampeonato = this.findCampByIdOrThrowBadRequest(id);
         domainCampeonato.setCampeonatoFinalizado(true);
         domainCampeonato.setCampeonatoIniciado(false);
@@ -133,6 +133,19 @@ public class CampeonatoService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, idTime + " foi inserido mais de uma vez");
             }
         });
+    }
+
+    public void validateFinishCampeonato(long id){
+        validateCampeonatoFinalizadoOuNaoIniciado(id);
+        validateNumeroJogos(id);
+    }
+
+    public void validateNumeroJogos(long id){
+        long nPartidas = tabelaPontRepository.numeroTimes(id) *
+                (tabelaPontRepository.numeroTimes(id) - 1);
+        if(campeonatoRepository.numeroJogos(id) != nPartidas){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Os times tem que ter jogado pelo menos duas vezes um contra o outro");
+        }
     }
 
     public void createTabelaPontForEachTime(DtoCampeonato dtoCampeonato,
