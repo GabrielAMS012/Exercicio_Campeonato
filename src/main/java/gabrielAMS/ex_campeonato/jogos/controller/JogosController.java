@@ -23,8 +23,7 @@ public class JogosController {
     private final JogosService jogosService;
 
     @GetMapping(path = "/all")
-    public ResponseEntity<Page<DomainJogos>> listAll(@PageableDefault(sort = "id_campeonato",
-            direction = Sort.Direction.ASC) Pageable pageable){
+    public ResponseEntity<Page<DomainJogos>> listAll(Pageable pageable){
         return ResponseEntity.ok(jogosService.findAll(pageable));
     }
 
