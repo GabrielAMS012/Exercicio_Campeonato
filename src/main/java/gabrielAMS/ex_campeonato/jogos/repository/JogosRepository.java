@@ -1,7 +1,6 @@
 package gabrielAMS.ex_campeonato.jogos.repository;
 
 import gabrielAMS.ex_campeonato.jogos.domain.DomainJogos;
-import gabrielAMS.ex_campeonato.tabela_pont.domain.DomainTabelaPont;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +10,7 @@ import java.util.Date;
 public interface JogosRepository extends JpaRepository<DomainJogos, Long> {
 
     @Query(nativeQuery = true,
-            value = "SELECT count(*) > 0 " +
+            value = "SELECT COUNT(*) > 0 " +
     "FROM jogos_tb j " +
     "   WHERE j.id_campeonato = :id_campeonato " +
     "   AND j.id_time_mandante = :id_time_mandante" +
@@ -21,7 +20,7 @@ public interface JogosRepository extends JpaRepository<DomainJogos, Long> {
                           @Param("id_time_visitante") long id_time_visitante);
 
     @Query(nativeQuery = true,
-            value = "SELECT count(*) > 0" +
+            value = "SELECT COUNT(*) > 0" +
                 "       FROM jogos_tb j " +
                 "           WHERE j.data_jogo = :dataJogo " +
                 "           AND (j.id_time_mandante = :id_time_mandante) " +

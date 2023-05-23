@@ -40,8 +40,6 @@ public class JogosService {
     public DomainJogos saveJogo(DtoJogos dtoJogos){
         this.validateNovoJogo(dtoJogos);
         DomainJogos novoJogo = new DomainJogos();
-        DomainCampeonato domainCampeonato = this.campeonatoService.findCampByIdOrThrowBadRequest(dtoJogos.getId_campeonato());
-        novoJogo.setIdCampeonato(domainCampeonato);
 
         novoJogo.setTime_mandante(this.timeService.findTimeByIdOrThrowBadRequest(dtoJogos.getTime_mandante()));
         novoJogo.setTime_visitante(this.timeService.findTimeByIdOrThrowBadRequest(dtoJogos.getTime_visitante()));
@@ -49,6 +47,8 @@ public class JogosService {
         novoJogo.setGols_visitante(dtoJogos.getGols_visitante());
         novoJogo.setDataJogo(dtoJogos.getDataJogo());
         if(Objects.nonNull(dtoJogos.getId_campeonato())) {
+            DomainCampeonato domainCampeonato = this.campeonatoService.findCampByIdOrThrowBadRequest(dtoJogos.getId_campeonato());
+            novoJogo.setIdCampeonato(domainCampeonato);
             validaVencedor(dtoJogos);
         }
         return this.jogosRepository.save(novoJogo);
@@ -65,12 +65,12 @@ public class JogosService {
     }
 
     @Transactional
-    public DomainJogos replaceJogo(long id, DtoJogos dtoJogos){
+    public void replaceJogo(long id, DtoJogos dtoJogos){
         this.validateNovoJogo(dtoJogos);
         DomainJogos jogoAtualizado = this.jogosRepository.findById(id).get();
         jogoAtualizado.setGols_mandante(jogoAtualizado.getGols_mandante());
         jogoAtualizado.setGols_visitante(jogoAtualizado.getGols_visitante());
-        return this.jogosRepository.save(jogoAtualizado);
+        this.jogosRepository.save(jogoAtualizado);
     }
 
     @Transactional
@@ -85,17 +85,17 @@ public class JogosService {
     private void validateNovoJogo(DtoJogos dtoJogos){
         if(Objects.nonNull(dtoJogos.getId_campeonato())) {
             validateCampeonato(dtoJogos);
+            jogoExiste(dtoJogos);
         }
-        jogoExiste(dtoJogos);
         validateData(dtoJogos);
         validateOponente(dtoJogos);
         validateTimeDisponivel(dtoJogos);
     }
 
     public void validateTimeNoCamp(DtoJogos dtoJogos){
-        if(!tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), tabelaPontRepository.getIdTabelaByIdTime(dtoJogos.getTime_mandante()))
-        || !tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), tabelaPontRepository.getIdTabelaByIdTime(dtoJogos.getTime_visitante()))){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O time não está nesse campeonato!");
+        if(!tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), dtoJogos.getGols_mandante())
+        || !tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), dtoJogos.getTime_visitante())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Um dos times não está nesse campeonato!");
         }
     }
 
@@ -134,63 +134,80 @@ public class JogosService {
         }
     }
 
-    private void validaVencedor(DtoJogos dtoJogos){
+    private void vitoriaMandante(DtoJogos dtoJogos){
         DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante());
         DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante());
 
+        timeMandante.setPontuacao(timeMandante.getPontuacao() + 3);
+        timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
+        timeMandante.setGols_sofridos(timeMandante.getGols_sofridos() + dtoJogos.getGols_visitante());
+        timeMandante.setQntd_vitorias(timeMandante.getQntd_vitorias() + 1);
+        timeMandante.setQntd_empates(timeMandante.getQntd_empates());
+        timeMandante.setQntd_derrotas(timeMandante.getQntd_derrotas());
+
+        timeVisitante.setPontuacao(timeVisitante.getPontuacao());
+        timeVisitante.setGols_marcados(timeVisitante.getGols_marcados() + dtoJogos.getGols_visitante());
+        timeVisitante.setGols_sofridos(timeVisitante.getGols_sofridos() + dtoJogos.getGols_mandante());
+        timeVisitante.setQntd_vitorias(timeVisitante.getQntd_vitorias());
+        timeVisitante.setQntd_derrotas(timeVisitante.getQntd_derrotas() + 1);
+        timeVisitante.setQntd_empates(timeVisitante.getQntd_empates());
+
+        this.tabelaService.save(timeMandante);
+        this.tabelaService.save(timeVisitante);
+    }
+
+    public void empate(DtoJogos dtoJogos){
+        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante());
+        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante());
+
+        timeMandante.setPontuacao(timeMandante.getPontuacao() + 1);
+        timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
+        timeMandante.setGols_sofridos(timeMandante.getGols_sofridos() + dtoJogos.getGols_visitante());
+        timeMandante.setQntd_vitorias(timeMandante.getQntd_vitorias());
+        timeMandante.setQntd_derrotas(timeMandante.getQntd_derrotas());
+        timeMandante.setQntd_empates(timeMandante.getQntd_empates() + 1);
+
+
+        timeVisitante.setPontuacao(timeVisitante.getPontuacao() + 1);
+        timeVisitante.setGols_marcados(timeVisitante.getGols_marcados() + dtoJogos.getGols_visitante());
+        timeVisitante.setGols_sofridos(timeVisitante.getGols_sofridos() + dtoJogos.getGols_mandante());
+        timeVisitante.setQntd_vitorias(timeVisitante.getQntd_vitorias());
+        timeVisitante.setQntd_empates(timeVisitante.getQntd_empates());
+        timeVisitante.setQntd_empates(timeVisitante.getQntd_empates() + 1);
+
+        this.tabelaService.save(timeMandante);
+        this.tabelaService.save(timeVisitante);
+    }
+
+    public void vitoriaVisitante(DtoJogos dtoJogos){
+        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante());
+        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante());
+
+        timeMandante.setPontuacao(timeMandante.getPontuacao());
+        timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
+        timeMandante.setGols_sofridos(timeMandante.getGols_sofridos() + dtoJogos.getGols_visitante());
+        timeMandante.setQntd_vitorias(timeMandante.getQntd_vitorias());
+        timeMandante.setQntd_derrotas(timeMandante.getQntd_derrotas() + 1);
+        timeMandante.setQntd_empates(timeMandante.getQntd_empates());
+
+        timeVisitante.setPontuacao(timeVisitante.getPontuacao() + 3);
+        timeVisitante.setGols_marcados(timeVisitante.getGols_marcados() + dtoJogos.getGols_visitante());
+        timeVisitante.setGols_sofridos(timeVisitante.getGols_sofridos() + dtoJogos.getGols_mandante());
+        timeVisitante.setQntd_vitorias(timeVisitante.getQntd_vitorias() + 1);
+        timeVisitante.setQntd_derrotas(timeVisitante.getQntd_derrotas());
+        timeVisitante.setQntd_empates(timeVisitante.getQntd_empates());
+
+        this.tabelaService.save(timeMandante);
+        this.tabelaService.save(timeVisitante);
+    }
+
+    private void validaVencedor(DtoJogos dtoJogos){
         if(dtoJogos.getGols_mandante() > dtoJogos.getGols_visitante()){
-            timeMandante.setPontuacao(timeMandante.getPontuacao() + 3);
-            timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
-            timeMandante.setGols_sofridos(timeMandante.getGols_sofridos() + dtoJogos.getGols_visitante());
-            timeMandante.setQntd_vitorias(timeMandante.getQntd_vitorias() + 1);
-            timeMandante.setQntd_empates(timeMandante.getQntd_empates());
-            timeMandante.setQntd_derrotas(timeMandante.getQntd_derrotas());
-
-            timeVisitante.setPontuacao(timeVisitante.getPontuacao());
-            timeVisitante.setGols_marcados(timeVisitante.getGols_marcados() + dtoJogos.getGols_visitante());
-            timeVisitante.setGols_sofridos(timeVisitante.getGols_sofridos() + dtoJogos.getGols_mandante());
-            timeVisitante.setQntd_vitorias(timeVisitante.getQntd_vitorias());
-            timeVisitante.setQntd_derrotas(timeVisitante.getQntd_derrotas() + 1);
-            timeVisitante.setQntd_empates(timeVisitante.getQntd_empates());
-
-            this.tabelaService.save(timeMandante);
-            this.tabelaService.save(timeVisitante);
+            vitoriaMandante(dtoJogos);
         }else if(dtoJogos.getGols_mandante() == dtoJogos.getGols_visitante()){
-
-            timeMandante.setPontuacao(timeMandante.getPontuacao() + 1);
-            timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
-            timeMandante.setGols_sofridos(timeMandante.getGols_sofridos() + dtoJogos.getGols_visitante());
-            timeMandante.setQntd_vitorias(timeMandante.getQntd_vitorias());
-            timeMandante.setQntd_derrotas(timeMandante.getQntd_derrotas());
-            timeMandante.setQntd_empates(timeMandante.getQntd_empates() + 1);
-
-
-            timeVisitante.setPontuacao(timeVisitante.getPontuacao() + 1);
-            timeVisitante.setGols_marcados(timeVisitante.getGols_marcados() + dtoJogos.getGols_visitante());
-            timeVisitante.setGols_sofridos(timeVisitante.getGols_sofridos() + dtoJogos.getGols_mandante());
-            timeVisitante.setQntd_vitorias(timeVisitante.getQntd_vitorias());
-            timeVisitante.setQntd_empates(timeVisitante.getQntd_empates());
-            timeVisitante.setQntd_empates(timeVisitante.getQntd_empates() + 1);
-
-            this.tabelaService.save(timeMandante);
-            this.tabelaService.save(timeVisitante);
+            empate(dtoJogos);
         }else {
-            timeMandante.setPontuacao(timeMandante.getPontuacao());
-            timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
-            timeMandante.setGols_sofridos(timeMandante.getGols_sofridos() + dtoJogos.getGols_visitante());
-            timeMandante.setQntd_vitorias(timeMandante.getQntd_vitorias());
-            timeMandante.setQntd_derrotas(timeMandante.getQntd_derrotas() + 1);
-            timeMandante.setQntd_empates(timeMandante.getQntd_empates());
-
-            timeVisitante.setPontuacao(timeVisitante.getPontuacao() + 3);
-            timeVisitante.setGols_marcados(timeVisitante.getGols_marcados() + dtoJogos.getGols_visitante());
-            timeVisitante.setGols_sofridos(timeVisitante.getGols_sofridos() + dtoJogos.getGols_mandante());
-            timeVisitante.setQntd_vitorias(timeVisitante.getQntd_vitorias() + 1);
-            timeVisitante.setQntd_derrotas(timeVisitante.getQntd_derrotas());
-            timeVisitante.setQntd_empates(timeVisitante.getQntd_empates());
-
-            this.tabelaService.save(timeMandante);
-            this.tabelaService.save(timeVisitante);
+            vitoriaVisitante(dtoJogos);
         }
     }
 }
