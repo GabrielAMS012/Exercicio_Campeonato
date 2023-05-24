@@ -4,7 +4,6 @@ import gabrielAMS.ex_campeonato.campeonato.domain.DomainCampeonato;
 import gabrielAMS.ex_campeonato.campeonato.dto.DtoCampeonato;
 
 import gabrielAMS.ex_campeonato.campeonato.repository.CampeonatoRepository;
-import gabrielAMS.ex_campeonato.exception.BadRequestException;
 import gabrielAMS.ex_campeonato.tabela_pont.domain.DomainTabelaPont;
 import gabrielAMS.ex_campeonato.tabela_pont.repository.TabelaPontRepository;
 import gabrielAMS.ex_campeonato.time.domain.DomainTime;
@@ -36,7 +35,7 @@ public class CampeonatoService {
 
     @Transactional(readOnly = true)
     public DomainCampeonato findCampByIdOrThrowBadRequest(long id){
-        return campeonatoRepository.findById(id).orElseThrow(()-> new BadRequestException("Campeonato não encontrado"));
+        return campeonatoRepository.findById(id).orElseThrow(()-> new RuntimeException("Campeonato não encontrado"));
     }
 
     @Transactional

@@ -1,6 +1,5 @@
 package gabrielAMS.ex_campeonato.time.service;
 
-import gabrielAMS.ex_campeonato.exception.BadRequestException;
 import gabrielAMS.ex_campeonato.time.domain.DomainTime;
 import gabrielAMS.ex_campeonato.time.repository.TimeRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class TimeService {
 
     @Transactional(readOnly = true)
     public DomainTime findTimeByIdOrThrowBadRequest(long id){
-        return timeRepository.findById(id).orElseThrow(()-> new BadRequestException("Time " + id + " não encontrado"));
+        return timeRepository.findById(id).orElseThrow(()-> new RuntimeException("Time " + id + " não encontrado"));
     }
 
     @Transactional

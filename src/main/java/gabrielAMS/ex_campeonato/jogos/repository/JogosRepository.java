@@ -34,4 +34,11 @@ public interface JogosRepository extends JpaRepository<DomainJogos, Long> {
                                        @Param("id_time_mandante") long id_time_mandante,
                                        @Param("id_time_visitante") long id_time_visitante);
 
+    @Query(nativeQuery = true,
+            value = "SELECT nome_time " +
+                    "FROM times_tb tt " +
+                    "JOIN jogos_tb jt on tt.id_time = jt.id_time_mandante " +
+                        "WHERE id_time_mandante = :id_time_mandante")
+    String getNome_timeByIdTimeMandante(@Param("id_time_mandante") long id_time_mandante);
+
 }

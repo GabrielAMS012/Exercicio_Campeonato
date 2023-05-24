@@ -3,7 +3,6 @@ package gabrielAMS.ex_campeonato.jogos.service;
 import gabrielAMS.ex_campeonato.campeonato.domain.DomainCampeonato;
 import gabrielAMS.ex_campeonato.campeonato.repository.CampeonatoRepository;
 import gabrielAMS.ex_campeonato.campeonato.service.CampeonatoService;
-import gabrielAMS.ex_campeonato.exception.BadRequestException;
 import gabrielAMS.ex_campeonato.jogos.domain.DomainJogos;
 import gabrielAMS.ex_campeonato.jogos.repository.JogosRepository;
 import gabrielAMS.ex_campeonato.jogos.dto.DtoJogos;
@@ -56,7 +55,7 @@ public class JogosService {
 
     @Transactional(readOnly = true)
     public DomainJogos findById(Long id){
-        return this.jogosRepository.findById(id).orElseThrow(() -> new BadRequestException("Jogo não encontrado"));
+        return this.jogosRepository.findById(id).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
     }
 
     @Transactional(readOnly = true)
@@ -93,7 +92,7 @@ public class JogosService {
     }
 
     public void validateTimeNoCamp(DtoJogos dtoJogos){
-        if(!tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), dtoJogos.getGols_mandante())
+        if(!tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), dtoJogos.getTime_mandante())
         || !tabelaPontRepository.getIdCampByIdTabela(dtoJogos.getId_campeonato(), dtoJogos.getTime_visitante())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Um dos times não está nesse campeonato!");
         }
@@ -124,7 +123,8 @@ public class JogosService {
 
     public void jogoExiste(DtoJogos dtoJogos){
         if(jogosRepository.jogoExiste(dtoJogos.getId_campeonato(), dtoJogos.getTime_mandante(), dtoJogos.getTime_visitante())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Jogo ja realizado com time 1 como mandante");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Jogo ja realizado com " + jogosRepository.getNome_timeByIdTimeMandante(dtoJogos.getTime_mandante()) +
+                    " como mandante");
         }
     }
 
@@ -135,8 +135,8 @@ public class JogosService {
     }
 
     private void vitoriaMandante(DtoJogos dtoJogos){
-        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante());
-        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante());
+        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante(), dtoJogos.getId_campeonato());
+        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante(), dtoJogos.getId_campeonato());
 
         timeMandante.setPontuacao(timeMandante.getPontuacao() + 3);
         timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
@@ -157,8 +157,8 @@ public class JogosService {
     }
 
     public void empate(DtoJogos dtoJogos){
-        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante());
-        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante());
+        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante(), dtoJogos.getId_campeonato());
+        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante(), dtoJogos.getId_campeonato());
 
         timeMandante.setPontuacao(timeMandante.getPontuacao() + 1);
         timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());
@@ -180,8 +180,8 @@ public class JogosService {
     }
 
     public void vitoriaVisitante(DtoJogos dtoJogos){
-        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante());
-        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante());
+        DomainTabelaPont timeMandante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_mandante(),dtoJogos.getId_campeonato());
+        DomainTabelaPont timeVisitante = tabelaPontRepository.getTimeByIdTimes(dtoJogos.getTime_visitante(), dtoJogos.getId_campeonato());
 
         timeMandante.setPontuacao(timeMandante.getPontuacao());
         timeMandante.setGols_marcados(timeMandante.getGols_marcados() + dtoJogos.getGols_mandante());

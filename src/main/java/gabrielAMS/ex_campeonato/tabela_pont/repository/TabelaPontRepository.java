@@ -13,8 +13,9 @@ public interface TabelaPontRepository extends JpaRepository<DomainTabelaPont, Lo
                         "FROM tabela_pont_tb tpt " +
                             "JOIN times_tb tt " +
                                 "ON tt.id_time = tpt.time_id " +
-                                    "WHERE tt.id_time = :id_time")
-    DomainTabelaPont getTimeByIdTimes(@Param("id_time") long id_time);
+                                    "WHERE tt.id_time = :id_time " +
+                                    "AND tpt.id_camp = :id_camp")
+    DomainTabelaPont getTimeByIdTimes(@Param("id_time") long id_time, @Param("id_camp") long id_camp);
 
     @Query(nativeQuery = true,
             value = "SELECT count(*) > 0 " +
