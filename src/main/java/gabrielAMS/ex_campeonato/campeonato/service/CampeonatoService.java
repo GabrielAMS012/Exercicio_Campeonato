@@ -82,7 +82,7 @@ public class CampeonatoService {
     public void validateIfCampeonatoExists(DomainCampeonato domainCampeonato){
         if(campeonatoRepository.existsByNomeCampAndAno(domainCampeonato.getNomeCamp(),
                 domainCampeonato.getAno())){
-            throw new RuntimeException("Campeonato já existe");
+            throw new RuntimeException("Campeonato já existe!");
         }
     }
 
