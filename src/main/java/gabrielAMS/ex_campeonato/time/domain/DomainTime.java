@@ -1,6 +1,5 @@
-package gabrielAMS.ex_campeonato.time.dto;
+package gabrielAMS.ex_campeonato.time.domain;
 
-import gabrielAMS.ex_campeonato.tabela_pont.dto.DtoTabela;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,14 +13,14 @@ import javax.persistence.*;
 @Entity
 @Builder
 @Table(name = "times_tb")
-public class DtoTime {
+public class DomainTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_time")
-    private long id;
-    @ManyToOne
-    @JoinColumn(name = "cod_time")
-    private DtoTabela tabela;
+    private long id_time;
 
+    @Column(name = "nome_time")
+    private String nomeTime;
 
 }

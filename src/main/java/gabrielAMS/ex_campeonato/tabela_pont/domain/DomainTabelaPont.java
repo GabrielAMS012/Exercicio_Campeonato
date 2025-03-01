@@ -1,14 +1,13 @@
-package gabrielAMS.ex_campeonato.tabela_pont.dto;
+package gabrielAMS.ex_campeonato.tabela_pont.domain;
 
-import gabrielAMS.ex_campeonato.campeonato.dto.DtoCampeonato;
-import gabrielAMS.ex_campeonato.time.dto.DtoTime;
+import gabrielAMS.ex_campeonato.campeonato.domain.DomainCampeonato;
+import gabrielAMS.ex_campeonato.time.domain.DomainTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,19 +15,19 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "tabela_pont_tb")
-public class DtoTabela {
+public class DomainTabelaPont {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_tabela")
     private long id_tabela;
 
-    @OneToMany
-    @JoinColumn(name = "cod_camp")
-    private List<DtoCampeonato> campeonatos;
+    @ManyToOne
+    @JoinColumn(name = "id_camp")
+    private DomainCampeonato campeonato;
 
-    @OneToMany
-    @JoinColumn(name = "cod_time")
-    private List<DtoTime> times;
+    @ManyToOne
+    @JoinColumn(name = "time_id")
+    private DomainTime times;
 
     @Column(name = "qntd_pontos")
     private int pontuacao;
@@ -36,6 +35,8 @@ public class DtoTabela {
     private int qntd_vitorias;
     @Column(name = "derrotas")
     private int qntd_derrotas;
+    @Column(name = "empates")
+    private int qntd_empates;
     @Column(name = "gols_marcados")
     private int gols_marcados;
     @Column(name = "gols_sofridos")
